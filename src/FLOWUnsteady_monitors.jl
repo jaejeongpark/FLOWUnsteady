@@ -500,6 +500,14 @@ function generate_monitor_statevariables(; figname="monitor_statevariables",
                                             run_name="",
                                             nsteps_savefig=10)
 
+    if save_path!=nothing
+        fname = joinpath(save_path, "state.csv")
+        f = open(fname, "w")
+        print(f, "time(sec),V_x, V_y, V_z, W_x, W_y,W_z,O_x,O_y,O_z")
+        print(f, "\n")
+        close(f)
+    end
+
     formatpyplot()
     fig = plt.figure(figname, figsize=[7*2, 5*1])
     axs = fig.subplots(1, 3)
@@ -529,6 +537,11 @@ function generate_monitor_statevariables(; figname="monitor_statevariables",
 
 
     function extra_runtime_function(sim, PFIELD, T, DT; optargs...)
+        
+        f = open(fname, "a")
+        print(f, sim.t,",", sim.vehicle.V[1],",",sim.vehicle.V[2],",",sim.vehicle.V[3],",",sim.vehicle.W[1],",",sim.vehicle.W[2],",",sim.vehicle.W[3],",",sim.vehicle.system.O[1],",",sim.vehicle.system.O[2],",",sim.vehicle.system.O[3])
+        print(f,"\n")
+        close(f)
         for j in 1:3
             axs[1].plot(sim.t, sim.vehicle.V[j], ".", label=Vlbls[j], alpha=0.8,
                                                             color=clrs[j])

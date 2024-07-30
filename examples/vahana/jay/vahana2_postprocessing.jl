@@ -650,11 +650,11 @@ function postprocessing_aeracoustics()
 
     # Path from where to read aerodynamic solution
     # read_path       = "temps/vahana2_sim16/"
-    read_path       = "/home/jaejeong/FLOWUnsteady/examples/vahana/JAY/vahana-example-mid-sim_vcr30_rpm600_cruiseonly/"
+    read_path       = "/home/jpark/FLOWUnsteady/examples/vahana/jay/vahana-example-mid-sim_vcr15_rpm600/"
     # Path where to save PSU-WOPWOP's outputs
-    save_path       = "/home/jaejeong/FLOWUnsteady/examples/vahana/JAY/vahana-example-mid-sim_vcr30_rpm600_cruiseonly-pww00/"
+    save_path       = "/home/jpark/NN_noise_model/vahana-example-mid-sim_vcr15_rpm600-pww00/"
     # Path to PSU-WOPWOP binary (not included in FLOWUnsteady)
-    wopwopbin       = "/home/jaejeong/Downloads/PSU-WOPWOP_v3.5.0/Linux/wopwop3_linux_v3.5.0_e36db3b"
+    wopwopbin       = "/home/jpark/vahana-example-mid-sim_vcr60_rpm600-pww00/wopwop3"
     # Run name (prefix of rotor files to read)
     run_name        = "vahana"
 
@@ -664,8 +664,8 @@ function postprocessing_aeracoustics()
 
     # rotorsystems[si][ri] is the number of blades of the ri-th rotor in the si-th system
     rotorsystems    = [[5, 5], [2, 2], [2, 2], [5, 5, 5, 5]]
-    nsteps          = 87               # when the aero solution ended
-    tend            = nsteps/87 *12.0833333  # (s) when the aero solution ended
+    nsteps          = 2160               # when the aero solution ended
+    tend            = nsteps/2160 *30.0  # (s) when the aero solution ended
 
 
 
