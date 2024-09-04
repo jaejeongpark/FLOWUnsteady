@@ -17,14 +17,27 @@
 
 import FLOWUnsteady as uns
 import FLOWUnsteady: vlm, vpm, gt, Im
+using Printf
 
 include(joinpath(uns.examples_path, "vahana", "vahana_vehicle.jl"))
 include(joinpath(uns.examples_path, "vahana", "vahana_maneuver.jl"))
 include(joinpath(uns.examples_path, "vahana", "vahana_monitor.jl"))
 
-run_name        = "vahana"                  # Name of this simulation
-save_path       = "vahana-example-mid-sim_vcr30_rpm600_new"# Where to save this simulation
-paraview        = true                      # Whether to visualize with Paraview
+# Check if the required number of arguments are passed
+if length(ARGS) != 4
+    println("Usage: julia flight_simulation.jl <rpm> <vcr> <ttot> <nstep>")
+    exit(1)
+end
+
+# Parse command-line arguments
+rpm = parse(Int, ARGS[1])   # RPM of main-wing rotors in hover (reference)
+vcr = parse(Float64, ARGS[2])   # Cruise velocity (Vcr)
+ttot = parse(Float64, ARGS[3])  # Total time (Ttot)
+nsteps = parse(Int, ARGS[4])  # Number of steps (Nstep)
+
+
+
+paraview        = false                      # Whether to visualize with Paraview
 
 # ----------------- GEOMETRY PARAMETERS ----------------------------------------
 n_factor        = 1                         # Discretization factor
@@ -39,9 +52,18 @@ thickness       = 0.04*chord                # (m) reference wing thickness
 
 # ----------------- SIMULATION PARAMETERS --------------------------------------
 # Maneuver settings
-Vcruise         = 30.0                      # (m/s) cruise speed (reference) 15
-RPMh_w          = 600.0                     # RPM of main-wing rotors in hover (reference) 600
-ttot            = 30.0                      # (s) total time to perform maneuver
+Vcruise         = vcr                      # (m/s) cruise speed (reference) 15
+RPMh_w          = rpm                     # RPM of main-wing rotors in hover (reference) 600
+# ttot            = 30.0                      # (s) total time to perform maneuver
+
+# # Parse the command-line arguments
+# Vcruise = parse(Float64, ARGS[1])  # First argument as an integer
+# RPMh_w = parse(Float64, ARGS[2])  # Second argument as a floating-point number
+
+println("Running simulation with param1 = $Vcruise and param2 = $RPMh_w")
+
+run_name        = "vahana"                  # Name of this simulation
+save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))"          # Where to save this simulation
 
 use_variable_pitch = true                   # Whether to use variable pitch in cruise
 
@@ -68,7 +90,7 @@ VehicleType     = uns.UVLMVehicle           # Unsteady solver
 # VehicleType     = uns.QVLMVehicle         # Quasi-steady solver
 
 # Time parameters
-nsteps          = 4*540                    # Time steps for entire maneuver 4*5400
+# nsteps          = 3000                    # Time steps for entire maneuver 4*5400
 dt              = ttot/nsteps               # (s) time step
 
 # VPM particle shedding

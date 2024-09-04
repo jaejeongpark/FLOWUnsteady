@@ -1,3 +1,20 @@
+# Changing Parameters for maneuver
+
+After following all installation instructions, 
+```bash
+cd ~/.julia/packages/FLOWUnsteady/{compilation#}/exampmles/vahana/
+code vahana_maneuver.jl
+```
+change this part in order to elongate crusing distance
+# Define end time of each stage
+    #  Stage 1: [0,  t1] -> Take off
+    #  Stage 2: [t1, t2] -> Transition
+    #  Stage 3: [t2, t3] -> Cruise
+    #  Stage 4: [t3, t4] -> Transition
+    #  Stage 5: [t4, 1 ] -> Landing
+    # t1, t2, t3, t4 = 0.2, 0.3, 0.5, 0.6
+    t1, t2, t3, t4 = 0.3, 0.4, 0.8, 0.9
+
 <img src="http://edoalvar2.groups.et.byu.net/public/FLOWUnsteady/flowunsteady-logo-wide03.png" alt="FLOWUnsteady logo" style="width:100%">
 
 <p align="right">
