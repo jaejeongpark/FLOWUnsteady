@@ -25,7 +25,7 @@ include(joinpath(uns.examples_path, "vahana", "vahana_monitor.jl"))
 
 # Check if the required number of arguments are passed
 if length(ARGS) != 4
-    println("Usage: julia flight_simulation.jl <rpm> <vcr> <ttot> <nstep>")
+    println("Usage: julia flight_simulation.jl <rpm> <vcr> <ttot> <nsteps>")
     exit(1)
 end
 
@@ -63,7 +63,7 @@ RPMh_w          = rpm                     # RPM of main-wing rotors in hover (re
 println("Running simulation with param1 = $Vcruise and param2 = $RPMh_w")
 
 run_name        = "vahana"                  # Name of this simulation
-save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))"          # Where to save this simulation
+save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))_nstep_$(@sprintf("%.0f",nsteps))"          # Where to save this simulation
 
 use_variable_pitch = true                   # Whether to use variable pitch in cruise
 
