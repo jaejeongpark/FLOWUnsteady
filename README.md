@@ -15,6 +15,15 @@ change this part in order to elongate crusing distance
     # t1, t2, t3, t4 = 0.2, 0.3, 0.5, 0.6
     t1, t2, t3, t4 = 0.3, 0.4, 0.8, 0.9
 
+# TEST Vahana Simulation
+  Change interested rpm @ main-wing rotor rpm when hovering, Vcruise, ttot(total time) in range to sweep
+  ```bash
+  cd FLOWUnsteady/examples/vahana/jay/
+  bash flight_sim.bash
+  ```
+  Every simulations are saved in FLOWUnsteady/examples/vahana/jay/ under the folder name of vcr_{Vcruise}_rpm_{rpm_hw}_ttot_{ttot}_nsteps_{nstep}.
+
+
 <img src="http://edoalvar2.groups.et.byu.net/public/FLOWUnsteady/flowunsteady-logo-wide03.png" alt="FLOWUnsteady logo" style="width:100%">
 
 <p align="right">
