@@ -25,13 +25,13 @@ include(joinpath(uns.examples_path, "vahana", "vahana_monitor.jl"))
 
 # Check if the required number of arguments are passed
 if length(ARGS) != 4
-    println("Usage: julia flight_simulation.jl <rpm> <vcr> <ttot> <nsteps>")
+    println("Usage: julia flight_simulation.jl <vcr> <rpm> <ttot> <nsteps>")
     exit(1)
 end
 
 # Parse command-line arguments
-rpm = parse(Int, ARGS[1])   # RPM of main-wing rotors in hover (reference)
-vcr = parse(Float64, ARGS[2])   # Cruise velocity (Vcr)
+vcr = parse(Float64, ARGS[1])   # Cruise velocity (Vcr)
+rpm = parse(Int, ARGS[2])   # RPM of main-wing rotors in hover (reference)
 ttot = parse(Float64, ARGS[3])  # Total time (Ttot)
 nsteps = parse(Int, ARGS[4])  # Number of steps (Nstep)
 
@@ -60,10 +60,10 @@ RPMh_w          = rpm                     # RPM of main-wing rotors in hover (re
 # Vcruise = parse(Float64, ARGS[1])  # First argument as an integer
 # RPMh_w = parse(Float64, ARGS[2])  # Second argument as a floating-point number
 
-println("Running simulation with param1 = $Vcruise and param2 = $RPMh_w")
+println("Running simulation with Vcruise = $Vcruise , RPMh_w = $RPMh_w , ttot = $ttot , nsteps = $nsteps")
 
 run_name        = "vahana"                  # Name of this simulation
-save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))_nstep_$(@sprintf("%.0f",nsteps))"          # Where to save this simulation
+save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))_nsteps_$(@sprintf("%.0f",nsteps))"          # Where to save this simulation
 
 use_variable_pitch = true                   # Whether to use variable pitch in cruise
 
