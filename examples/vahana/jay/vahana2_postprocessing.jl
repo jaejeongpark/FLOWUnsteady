@@ -748,8 +748,21 @@ function postprocessing_aeracoustics()
 
         ## ADD bpm_noise_measure(JJ)
 
-        # Path where to save BPM outputs
-        # save_bpm_path   = joinpath(sims_path, "vahana-example-mid-sim_vcr15_rpm1200-bpm00/") 
+        # Path where to read and save simulation data
+        sims_path = "/home/jaejeong/FLOWUnsteady/examples/vahana/JAY"
+        # # Path where to save BPM outputs
+        save_bpm_path   = joinpath(sims_path, "vahana-example-mid-sim_vcr30_rpm600_lowsample-tw-bpm00/") 
+        
+        J               = 2                    # Advance ratio Vinf/(nD)
+        AOA             = 0                    # (deg) Angle of attack (incidence angle)
+
+        magVinf         = J*RPM/60*(2*R)
+        Vinf(X,t)       = magVinf*[cosd(AOA), sind(AOA), 0]  # (m/s) freestream velocity
+
+        # BPM parameters
+        TE_thickness    = 16.0                 # (deg) trailing edge thickness
+        noise_correction= 1.00                 # Calibration parameter (1 = no correction)
+        freq_bins       = uns.BPM.default_f    # Frequency bins (default is one-third octave band)
         
         
         # # Tandemwing (rotors_tw) broadband noise
