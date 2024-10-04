@@ -63,7 +63,7 @@ RPMh_w          = rpm                     # RPM of main-wing rotors in hover (re
 println("Running simulation with Vcruise = $Vcruise , RPMh_w = $RPMh_w , ttot = $ttot , nsteps = $nsteps")
 
 run_name        = "vahana"                  # Name of this simulation
-save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))_nsteps_$(@sprintf("%.0f",nsteps))"          # Where to save this simulation
+save_path       = "vcr_$(@sprintf("%.0f",Vcruise))_rpm_$(@sprintf("%.0f",RPMh_w))_ttot_$(@sprintf("%.0f",ttot))_nsteps_$(@sprintf("%.0f",nsteps))_12sec_cruiseonly"          # Where to save this simulation
 
 use_variable_pitch = true                   # Whether to use variable pitch in cruise
 
@@ -76,8 +76,8 @@ mu              = 1.81e-5                   # (kg/ms) air dynamic viscosity
 #       point along the eVTOL maneuver (tstart=0 and tquit=ttot will simulate
 #       the entire maneuver, tstart=0.20*ttot will start it at the beginning of
 #       the hover->cruise transition)
-tstart          = 0.00*ttot                 # (s) start simulation at this point in time 0.00*ttot
-tquit           = 1.00*ttot                 # (s) end simulation at this point in time 1.00*ttot
+tstart          = 0.30*ttot                 # (s) start simulation at this point in time 0.00*ttot
+tquit           = 0.50*ttot                 # (s) end simulation at this point in time 1.00*ttot
 
 start_kinmaneuver = true                    # If true, it starts the maneuver with the
                                             # velocity and angles of tstart.
@@ -86,7 +86,7 @@ start_kinmaneuver = true                    # If true, it starts the maneuver wi
 # ----------------- SOLVER PARAMETERS ------------------------------------------
 
 # Aerodynamic solver
-VehicleType     = uns.UVLMVehicle           # Unsteady solver
+VehicleType     = uns.UVLMVehicle           # Unsteady solver (JJ orginal)
 # VehicleType     = uns.QVLMVehicle         # Quasi-steady solver
 
 # Time parameters
@@ -94,7 +94,7 @@ VehicleType     = uns.UVLMVehicle           # Unsteady solver
 dt              = ttot/nsteps               # (s) time step
 
 # VPM particle shedding
-p_per_step      = 5                         # Sheds per time step
+p_per_step      = 1                         # Sheds per time step (JJ original: 5)
 shed_starting   = false                     # Whether to shed starting vortex
 shed_unsteady   = true                      # Whether to shed vorticity from unsteady loading
 unsteady_shedcrit = 0.001                   # Shed unsteady loading whenever circulation
@@ -142,11 +142,11 @@ vpm_integration = vpm.euler
 vpm_viscous     = vpm.Inviscid()            # VPM viscous diffusion scheme
 # vpm_viscous   = vpm.CoreSpreading(-1, -1, vpm.zeta_fmm; beta=100.0, itmax=20, tol=1e-1)
 
-# vpm_SFS       = vpm.SFS_none              # VPM LES subfilter-scale model
-vpm_SFS         = vpm.DynamicSFS(vpm.Estr_fmm, vpm.pseudo3level_positive;
-                                  alpha=0.999, maxC=1.0,
-                                  clippings=[vpm.clipping_backscatter],
-                                  controls=[vpm.control_directional, vpm.control_magnitude])
+vpm_SFS       = vpm.SFS_none              # VPM LES subfilter-scale model
+# vpm_SFS         = vpm.DynamicSFS(vpm.Estr_fmm, vpm.pseudo3level_positive;
+#                                   alpha=0.999, maxC=1.0,
+#                                   clippings=[vpm.clipping_backscatter],
+#                                   controls=[vpm.control_directional, vpm.control_magnitude])
 
 if VehicleType == uns.QVLMVehicle
     # Mute warnings regarding potential colinear vortex filaments. This is
@@ -196,6 +196,7 @@ max_particles = ceil(Int, (nsteps+2)*(2*vlm.get_m(vehicle.wake_system)*(p_per_st
 max_particles = tquit != Inf ? ceil(Int, max_particles*(tquit-tstart)/ttot) : max_particles
 max_particles = min(10000000, max_particles)
 max_particles = VehicleType==uns.QVLMVehicle ? 10000 : max_particles
+# max_particles = VehicleType==uns.QVLMVehicle ? 10000000 : max_particles
 
 
 
@@ -285,7 +286,7 @@ org_theta = [
 #  Stage 3: [t2, t3] -> Cruise
 #  Stage 4: [t3, t4] -> Transition
 #  Stage 5: [t4, 1]  -> Landing
-t1, t2, t3, t4 = 0.1, 0.15, 0.85, 0.9
+t1, t2, t3, t4 = 0.2, 0.3, 0.5, 0.6
 
 # Pitch at each stage
 pitch_takeoff  = 0
@@ -342,17 +343,23 @@ end
 # Remove by particle strength
 # (remove particles neglibly faint, remove blown up)
 rmv_strngth = 2*2/p_per_step * dt/(ttot/(nsteps))         # Reference strength
-minmaxGamma = rmv_strngth*[0.0001, 0.05]                # Strength bounds (removes particles outside of these bounds)
+# minmaxGamma = rmv_strngth*[0.0001, 0.05]                # Strength bounds (removes particles outside of these bounds) (JJ original)
+minmaxGamma = rmv_strngth*[0.002, 0.01] 
+println("minmaxGamma = ", minmaxGamma)
+# wake_treatment_strength = uns.remove_particles_strength( minmaxGamma[1]^2, minmaxGamma[2]^2; every_nsteps=1)
 wake_treatment_strength = uns.remove_particles_strength( minmaxGamma[1]^2, minmaxGamma[2]^2; every_nsteps=1)
 
 # Remove by particle size
 # (remove particle nearly singular, remove negligibly smeared)
-minmaxsigma = sigma_vpm_overwrite*[0.1, 5]              # Size bounds (removes particles outside of these bounds)
+# minmaxsigma = sigma_vpm_overwrite*[0.1, 5]              # Size bounds (removes particles outside of these bounds)
+minmaxsigma = sigma_vpm_overwrite*[1, 2]
 wake_treatment_sigma = uns.remove_particles_sigma( minmaxsigma[1], minmaxsigma[2]; every_nsteps=1)
+# wake_treatment_sigma = uns.remove_particles_sigma( minmaxsigma[1], minmaxsigma[2]; every_nsteps=1)
 
 # Remove by distance
 # (remove particles outside of the computational domain of interest, i.e., far from vehicle)
-wake_treatment_sphere = uns.remove_particles_sphere((1.25*b)^2, 1; Xoff=[4.0, 0, 0])
+# wake_treatment_sphere = uns.remove_particles_sphere((1.25*b)^2, 1; Xoff=[4.0, 0, 0])
+wake_treatment_sphere = uns.remove_particles_sphere((1.02*b)^2, 1; Xoff=[4.0, 0, 0])
 
 # Concatenate all wake treatments
 wake_treatment = uns.concatenate(wake_treatment_sphere, wake_treatment_strength, wake_treatment_sigma)
